@@ -46,3 +46,41 @@
 **E** clica no botão "Login" sem o campo "Username" preenchido
 
 **Então** o sistema exibe a mensagem "Username is required".
+
+---
+**Cenário**: Atualização do contador ao adicionar produto ao carrinho
+**Dado** que o usuário está logado 
+**E** está na página de inventário
+**E** o carrinho está vazio
+**Quando** o usuário adiciona um produto ao carrinho
+**Então** o contador do carrinho exibe "1"
+
+---
+**Cenário**: Atualização do contador ao remover produto do carrinho
+**Dado** que o usuário está logado
+**E** está na página de inventário
+**E** o carrinho possui 2 produtos
+**Quando** o usuário remove um produto do carrinho
+**Então** o contador do carrinho exibe "1"
+
+---
+**Cenário**: Exibe botão "Remove" ao adicionar produto ao carrinho
+**Dado** que o usuário está logado 
+**E** está na página de inventário
+**Quando** o usuário adiciona um produto ao carrinho
+**Então** o botão "Add to cart" do item adicionado é alterado para "Remove"
+
+---
+**Cenário**: Exibe botão "Add to cart" ao remover produto do carrinho
+**Dado** que o usuário está logado
+**E** está na página de inventário
+**Quando** o usuário remove um produto do carrinho
+**Então** o botão "Remove" do item removido é alterado para "Add to cart"
+
+---
+**Cenário**: Remove o contador ao esvaziar o carrinho
+**Dado** que o usuário está logado
+**E** está na página de inventário
+**E** o carrinho possui 1 produto
+**Quando** o usuário exclui o produto do carrinho
+**Então** o contador do carrinho não é exibido
