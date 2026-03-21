@@ -76,8 +76,8 @@ test.describe('Adicionar/remover produtos pela página de inventário', () => {
         await pm.onInventoryPage().addItemToCart(PRODUCTS);
 
         for (const product of PRODUCTS) {
-            await expect(pm.onInventoryPage().getItemButton(product, 'Remove')).toBeVisible();
-            await expect(pm.onInventoryPage().getItemButton(product, 'Add to cart')).not.toBeVisible();
+            await expect(pm.onInventoryPage().getItemButton(product.name, 'Remove')).toBeVisible();
+            await expect(pm.onInventoryPage().getItemButton(product.name, 'Add to cart')).not.toBeVisible();
         }
     })
 
@@ -85,8 +85,8 @@ test.describe('Adicionar/remover produtos pela página de inventário', () => {
         await pm.onInventoryPage().addItemToCart(PRODUCTS);
         await pm.onInventoryPage().delItemFromCart([PRODUCTS[0]]);
 
-        await expect(pm.onInventoryPage().getItemButton(PRODUCTS[0], 'Add to cart')).toBeVisible();
-        await expect(pm.onInventoryPage().getItemButton(PRODUCTS[0], 'Remove')).not.toBeVisible();
+        await expect(pm.onInventoryPage().getItemButton(PRODUCTS[0].name, 'Add to cart')).toBeVisible();
+        await expect(pm.onInventoryPage().getItemButton(PRODUCTS[0].name, 'Remove')).not.toBeVisible();
 
     })
 
@@ -95,5 +95,43 @@ test.describe('Adicionar/remover produtos pela página de inventário', () => {
         await pm.onInventoryPage().delItemFromCart(PRODUCTS);
 
         await expect(page.locator('.shopping_cart_badge')).toHaveCount(0);
+    })
+})
+
+test.describe('Página do Carrinho', () => {
+    test.beforeEach(async () => {
+        await pm.onLoginPage().login({
+            username: process.env.VALID_USERNAME!,
+            password: process.env.VALID_PASSWORD!
+        })  
+    })
+
+    test('Deve exibir produto no carrinho ao adiciona-lo pela página de inventário', async ({ page }) => {
+        await pm.onInventoryPage().addItemToCart([PRODUCTS[0]]);
+        await pm.onHeaderPage().navigateToCartPage();
+
+        for (const product of [PRODUCTS[0]]) {
+            const cartItem = page.locator('.cart_list').locator('.cart_item', { hasText: product.name });
+
+            await expect(cartItem.locator('.inventory_item_name')).toHaveText(product.name);
+            await expect(cartItem.locator('.inventory_item_price')).toHaveText(`$${product.price}`);
+            await expect(cartItem.locator('.cart_quantity')).toHaveText('1')
+        }
+    })
+
+    test('Deve excluir produto ao remover pela página do carrinho', async ({ page }) => {
+        await pm.onInventoryPage().addItemToCart([PRODUCTS[0]]);
+        await pm.onHeaderPage().navigateToCartPage();
+        await pm.onCartPage().removeItemFromCart([PRODUCTS[0]]);
+
+        await expect(page.locator('.cart_list').locator('.cart_item', {hasText: PRODUCTS[0].name})).not.toBeVisible();
+    })
+
+    test('Deve permanecer na página do carrinho ao usuário tentar prosseguir para o checkout com carrinho vazio', async ({ page }) => {
+        test.fail()
+        await pm.onHeaderPage().navigateToCartPage();
+        await pm.onCartPage().navigateToCheckout();
+
+        await expect(page).toHaveURL('/cart.html');
     })
 })

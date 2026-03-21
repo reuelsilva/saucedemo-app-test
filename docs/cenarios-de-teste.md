@@ -70,7 +70,7 @@
 **Quando** o usuário adiciona um produto ao carrinho
 **Então** o botão "Add to cart" do item adicionado é alterado para "Remove"
 
----
+--- 
 **Cenário**: Exibe botão "Add to cart" ao remover produto do carrinho
 **Dado** que o usuário está logado
 **E** está na página de inventário
@@ -84,3 +84,29 @@
 **E** o carrinho possui 1 produto
 **Quando** o usuário exclui o produto do carrinho
 **Então** o contador do carrinho não é exibido
+
+---
+**Cenário**: Exibe o produto adicionado na página do carrinho
+**Dado** que o usuário está logado
+**E** está na página de inventário
+**E** o carrinho está vazio
+**Quando** o usuário adiciona um produto ao carrinho
+**E** clica no ícone do carrinho
+**Então** deve ser exibido o produto adicionado contendo nome, preço e quantidade
+
+---
+**Cenário**: Remove produto do carrinho pela página do carrinho
+**Dado** que o usuário está logado
+**E** possui um produto adicionado no carrinho
+**E** está na página do carrinho
+**Quando** o usuário clica no botão "Remove" do produto
+**Então** o produto não é exibido no carrinho
+**E** o contador de itens do carrinho não é exibido
+
+---
+**Cenário**: Impede checkout com carrinho vazio
+**Dado** que o usuário está logado
+**E** está na página do carrinho
+**E** o carrinho está vazio
+**Quando** o usuário clica no botão "Checkout"
+**Então** o usuário permanece na página do carrinho
