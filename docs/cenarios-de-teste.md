@@ -110,3 +110,52 @@
 **E** o carrinho está vazio
 **Quando** o usuário clica no botão "Checkout"
 **Então** o usuário permanece na página do carrinho
+
+---
+**Cenário**: Redireciona para a página de formulário ao clicar em "Checkout"
+**Dado** que o usuário está logado
+**E** está na página do carrinho
+**E** possui no mínimo 1 produto adicionado ao carrinho
+**Quando** o usuário clica no botão "Checkout"
+**Então** o sistema redireciona para a página "Checkout: Your Information"
+
+---
+**Cenário**: Redireciona para a página "Checkout: Overview"
+**Dado** que o usuário está logado
+**E** possui no mínimo 1 produto adicionado ao carrinho
+**E** está na página "Checkout: Your Information"
+**Quando** o usuário preenche o campo "First Name"
+**E** preenche o campo "Last Name"
+**E** preenche o campo "Postal Code"
+**E** clica no botão "Continue"
+**Então** o sistema redireciona para a página "Checkout: Overview"
+
+---
+**Cenário**: Envio de formulário com campo "First Name" vazio
+**Dado** que o usuário está logado
+**E** possui no mínimo 1 produto adicionado ao carrinho
+**E** está na página "Checkout: Your Information"
+**Quando** o usuário preenche o campo "Last Name"
+**E** preenche o campo "Postal Code"
+**E** clica no botão "Continue" 
+**Então** o sistema exibe a mensagem "Error: First Name is required"
+
+---
+**Cenário**: Envio de formulário com campo "Last Name" vazio
+**Dado** que o usuário está logado
+**E** possui no mínimo 1 produto adicionado ao carrinho
+**E** está na página "Checkout: Your Information"
+**Quando** o usuário preenche o campo "First Name"
+**E** preenche o campo "Postal Code"
+**E** clica no botão "Continue"
+**Então** o sistema exibe a mensagem "Error: Last Name is required"
+
+---
+**Cenário**: Envio de formulário com campo "Postal Code" vazio
+**Dado** que o usuário está logado
+**E** possui no mínimo 1 produto adicionado ao carrinho
+**E** está na página "Checkout: Your Information"
+**Quando** o usuário preenche o campo "First Name"
+**E** preenche o campo "Last Name"
+**E** clica no botão "Continue"
+**Então** o sistema exibe a mensagem "Error: Postal Code is required"

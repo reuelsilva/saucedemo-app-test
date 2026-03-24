@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { PageManager } from '../page-objects/pageManager';
+import { faker } from '@faker-js/faker';
 import getProducts from '../helpers/products';
 
 let pm: PageManager;
@@ -103,7 +104,7 @@ test.describe('Página do Carrinho', () => {
         await pm.onLoginPage().login({
             username: process.env.VALID_USERNAME!,
             password: process.env.VALID_PASSWORD!
-        })  
+        })
     })
 
     test('Deve exibir produto no carrinho ao adiciona-lo pela página de inventário', async ({ page }) => {
@@ -124,7 +125,7 @@ test.describe('Página do Carrinho', () => {
         await pm.onHeaderPage().navigateToCartPage();
         await pm.onCartPage().removeItemFromCart([PRODUCTS[0]]);
 
-        await expect(page.locator('.cart_list').locator('.cart_item', {hasText: PRODUCTS[0].name})).not.toBeVisible();
+        await expect(page.locator('.cart_list').locator('.cart_item', { hasText: PRODUCTS[0].name })).not.toBeVisible();
     })
 
     test('Deve permanecer na página do carrinho ao usuário tentar prosseguir para o checkout com carrinho vazio', async ({ page }) => {
@@ -133,5 +134,68 @@ test.describe('Página do Carrinho', () => {
         await pm.onCartPage().navigateToCheckout();
 
         await expect(page).toHaveURL('/cart.html');
+    })
+})
+
+test.describe('Página Checkout: Your information', () => {
+    test.beforeEach(async () => {
+        await pm.onLoginPage().login({
+            username: process.env.VALID_USERNAME!,
+            password: process.env.VALID_PASSWORD!
+        })
+
+        await pm.onInventoryPage().addItemToCart([PRODUCTS[0]]);
+        await pm.onHeaderPage().navigateToCartPage();
+        await pm.onCartPage().navigateToCheckout();
+    })
+
+    test.describe('Envio com sucesso do formulário', () => {
+        test('Deve redirecionar o usuario para a página "Checkout: Overview"', async ({ page }) => {
+            await pm.onCheckoutFormPage().fillFormUserInfo({ 
+                firstName: faker.person.firstName(), 
+                lastName: faker.person.lastName(), 
+                postalCode: faker.location.zipCode()
+            })
+            await pm.onCheckoutFormPage().submitFormUserInfo();
+
+            await expect(page).toHaveURL('/checkout-step-two.html');
+            await expect(page.getByTestId('title')).toHaveText('Checkout: Overview');
+            await expect(page.locator('.cart_list').locator('.cart_item', { hasText: PRODUCTS[0].name })).toBeVisible();
+        })
+    })
+
+    test.describe('Tratamento de erro no envio do formulário', () => {
+        test('Deve exibir erro ao enviar formulário com campo "First Name" vazio', async ({ page }) => {
+            await pm.onCheckoutFormPage().fillFormUserInfo({
+                firstName: '', 
+                lastName: faker.person.lastName(), 
+                postalCode: faker.location.zipCode()
+            })
+            await pm.onCheckoutFormPage().submitFormUserInfo();
+
+            await expect(page.getByTestId('error')).toContainText('First Name is required');
+        })
+
+        test('Deve exibir erro ao enviar formulário com campo "Last Name" vazio', async ({ page }) => {
+            await pm.onCheckoutFormPage().fillFormUserInfo({
+                firstName: faker.person.firstName(), 
+                lastName: '', 
+                postalCode: faker.location.zipCode()
+            })
+            await pm.onCheckoutFormPage().submitFormUserInfo();
+
+            await expect(page.getByTestId('error')).toContainText('Last Name is required');
+        })
+
+        test('Deve exibir erro ao enviar formulário com campo "Zip/Postal Code" vazio', async ({ page }) => {
+            await pm.onCheckoutFormPage().fillFormUserInfo({
+                firstName: faker.person.firstName(), 
+                lastName: faker.person.lastName(), 
+                postalCode: ''
+            })
+            await pm.onCheckoutFormPage().submitFormUserInfo();
+
+            await expect(page.getByTestId('error')).toContainText('Postal Code is required');
+        })
     })
 })
