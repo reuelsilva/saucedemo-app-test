@@ -199,3 +199,59 @@ test.describe('Página Checkout: Your information', () => {
         })
     })
 })
+
+test.describe('Página Checkout: Overview', () => {
+    test.beforeEach(async () => {
+        await pm.onLoginPage().login({
+            username: process.env.VALID_USERNAME!,
+            password: process.env.VALID_PASSWORD!
+        })
+
+        await pm.onInventoryPage().addItemToCart(PRODUCTS);
+        await pm.onHeaderPage().navigateToCartPage();
+        await pm.onCartPage().navigateToCheckout();
+        await pm.onCheckoutFormPage().fillFormUserInfo({
+            firstName: faker.person.firstName(),
+            lastName: faker.person.lastName(),
+            postalCode: faker.location.zipCode()
+        })
+        await pm.onCheckoutFormPage().submitFormUserInfo();
+    })
+
+    test('Deve exibir os produtos do pedido com nome, preço e quantidade corretos', async ({ page }) => {
+        for(const product of PRODUCTS){
+            const productItem = page.locator('.cart_list .cart_item', {hasText: product.name})
+
+            await expect(productItem.locator('.inventory_item_name')).toHaveText(product.name);
+            await expect(productItem.locator('.inventory_item_price')).toHaveText(`$${product.price}`);
+            await expect(productItem.locator('.cart_quantity')).toHaveText('1')
+        }
+    })
+
+    test('Deve exibir o item total correspondente à soma dos preços dos produtos no carrinho', async ({ page }) => {
+        const expectedSubtotal = PRODUCTS.reduce((acc, product) => acc + parseFloat(product.price), 0).toFixed(2);
+        await expect(page.getByTestId('subtotal-label')).toHaveText(`Item total: $${expectedSubtotal}`)
+    })
+
+    test('Deve exibir o valor total correspondente à soma do item total e da taxa de entrega', async ({ page }) => {
+        const expectedSubtotal = PRODUCTS.reduce( (acc, product) => acc + parseFloat( product.price), 0 );
+        const taxValue = await page.getByTestId('tax-label').textContent();
+        const expectedTotal = expectedSubtotal + parseFloat(taxValue!.replace('Tax: $', ''));
+
+        await expect(page.getByTestId('total-label')).toHaveText(`Total: $${expectedTotal}`)
+    })
+
+    test('Deve redirecionar para a página "Checkout: Complete!" ao finalizar pedido com sucesso', async ({ page }) => {
+        await page.getByTestId('finish').click();
+
+        await expect(page).toHaveURL('/checkout-complete.html');
+        await expect(page.getByTestId('title')).toHaveText('Checkout: Complete!');
+    })
+
+    test('Deve esvaziar o carrinho ao finalizar pedido com sucesso', async ({ page }) => {
+        await page.getByTestId('finish').click();
+        await pm.onHeaderPage().navigateToCartPage();
+
+        await expect(page.locator('.cart_list').locator('.cart_item')).toHaveCount(0);
+    })
+})

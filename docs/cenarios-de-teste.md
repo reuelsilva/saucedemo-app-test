@@ -159,3 +159,49 @@
 **E** preenche o campo "Last Name"
 **E** clica no botão "Continue"
 **Então** o sistema exibe a mensagem "Error: Postal Code is required"
+
+---
+**Cenário**: Exibe produtos com nome, preço e quantidade corretos no checkout
+**Dado** que o usuário está logado
+**E** possui 2 produtos adicionados ao carrinho
+**E** preencheu os dados de entrega no formulário de checkout
+**Quando** o usuário confirma os dados de entrega
+**Então** ele é redirecionado para a página "Checkout: Overview"
+**E** deve ser exibido os produtos adicionados contendo nome, preço e quantidade corretos
+
+---
+**Cenário**: Exibe o valor do item total corretamente
+**Dado** que o usuário está logado
+**E** possui 2 produtos adicionados no carrinho
+**E** preencheu os dados de entrega no formulário de checkout
+**Quando** o usuário confirma os dados de entrega
+**Então** ele é redirecionado para a página "Checkout: Overview"
+**E** o valor exibido em **"Item total"** deve ser igual à soma dos preços dos produtos adicionados
+
+---
+**Cenário**: Exibe o valor total corretamente
+**Dado** que o usuário está logado
+**E** possui 2 produtos adicionados no carrinho
+**E** preencheu os dados de entrega no formulário de checkout
+**Quando** o usuário confirma os dados de entrega
+**Então** ele é redirecionado para a página "Checkout: Overview"
+**E** o valor exibido em **"Total"** deve ser igual à soma do **"Item total"** e da **"Tax"** exibidos na página
+
+---
+**Cenário**: Finaliza a compra com sucesso
+**Dado** que o usuário está logado
+**E** possui 2 produtos adicionados ao carrinho
+**E** preencheu os dados de entrega no formulário de checkout
+**E** está na página "Checkout: Overview"
+**Quando** o usuário clica no botão "Finish"
+**Então** o usuário deve ser redirecionado para a página "Checkout: Complete!"
+
+---
+**Cenário**: Esvazia o carrinho ao finalizar compra com sucesso
+**Dado** que o usuário está logado
+**E** possui 2 produtos adicionados ao carrinho
+**E** preencheu os dados de entrega no formulário de checkout
+**E** foi redirecionado para a página "Checkout: Overview"
+**Quando** o usuário finaliza a compra com sucesso
+**E** o usuário clica no ícone do carrinho
+**Então** a página do carrinho nao exibe produtos adicionados
