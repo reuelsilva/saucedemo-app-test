@@ -1,6 +1,6 @@
 # SauceDemo App Test
 
-Projeto de testes automatizados end-to-end para a aplicação [SauceDemo](https://www.saucedemo.com/), desenvolvido com [Playwright](https://playwright.dev/) e TypeScript.
+Projeto automação de testes E2E para a aplicação [SauceDemo](https://www.saucedemo.com/), desenvolvido com [Playwright](https://playwright.dev/) e TypeScript.
 
 ## Tecnologias
 
